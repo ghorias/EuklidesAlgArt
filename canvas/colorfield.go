@@ -5,7 +5,6 @@ import (
 	"math"
 )
 
-// HSVtoRGB converts hue (0-360), saturation and value (0-1) to RGBA
 func HSVtoRGB(h, s, v float64) color.RGBA {
 	h = math.Mod(h, 360)
 	c := v * s
@@ -36,7 +35,6 @@ func HSVtoRGB(h, s, v float64) color.RGBA {
 	}
 }
 
-// StepColor maps a GCD step index to a color
 func StepColor(step, total int) color.RGBA {
 	hue := float64(step) / float64(total) * 360
 	return HSVtoRGB(hue, 0.8, 0.95)

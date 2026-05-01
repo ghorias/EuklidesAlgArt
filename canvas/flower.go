@@ -7,35 +7,31 @@ import (
 
 func DrawFlower(img *image.RGBA, steps []int, cx, cy int) {
 	total := len(steps)
-	petals := 12
+	petals := 16
 	angleStep := 2 * math.Pi / float64(petals)
 
 	for p := 0; p < petals; p++ {
 		baseAngle := float64(p) * angleStep
-		r := 0.0
 
 		for i := 0; i < total; i++ {
 			if steps[i] == 0 {
 				break
 			}
-			c := StepColor(i, total)
 			t := float64(i) / float64(total)
 
-			// Petalform: r växer och krymper per kronblad
-			petalR := r * math.Abs(math.Sin(t*math.Pi))
-			angle := baseAngle + t*math.Pi*0.5
+			// Petalform: Rose curve — r = cos(k*theta)
+			theta := t * math.Pi
+			r := float64(steps[i]) * 2.0 * math.Abs(math.Cos(3*theta))
 
-			x1 := cx + int(petalR*math.Cos(angle))
-			y1 := cy + int(petalR*math.Sin(angle))
+			angle := baseAngle + theta
+			c := StepColor(p*total/petals+i, total)
 
-			r += float64(steps[i]) * 0.3
-			petalR2 := r * math.Abs(math.Sin(t*math.Pi))
+			x1 := cx + int(r*0.8*math.Cos(angle))
+			y1 := cy + int(r*0.8*math.Sin(angle))
+			x2 := cx + int(r*math.Cos(angle+0.05))
+			y2 := cy + int(r*math.Sin(angle+0.05))
 
-			x2 := cx + int(petalR2*math.Cos(angle))
-			y2 := cy + int(petalR2*math.Sin(angle))
-
-			DrawThickLine(img, x1, y1, x2, y2, 3, c)
+			DrawThickLine(img, x1, y1, x2, y2, 2, c)
 		}
-		r = 0.0
 	}
 }

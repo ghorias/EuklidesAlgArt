@@ -10,7 +10,6 @@ func DrawWeb(img *image.RGBA, steps []int, cx, cy int) {
 	bounds := img.Bounds()
 	radius := float64(min(bounds.Max.X, bounds.Max.Y)/2) * 0.9
 
-	// Rita spekar från centrum ut till ringen
 	spokes := total
 	if spokes > 360 {
 		spokes = 360
@@ -19,20 +18,22 @@ func DrawWeb(img *image.RGBA, steps []int, cx, cy int) {
 
 	spokeX := make([]int, spokes)
 	spokeY := make([]int, spokes)
+
+	// Rita spekar med unik färg per spake
 	for i := 0; i < spokes; i++ {
 		angle := float64(i) * angleStep
 		spokeX[i] = cx + int(radius*math.Cos(angle))
 		spokeY[i] = cy + int(radius*math.Sin(angle))
-		c := StepColor(i, total)
+		c := StepColor(i, spokes)
 		DrawThickLine(img, cx, cy, spokeX[i], spokeY[i], 1, c)
 	}
 
-	// Koppla spekar med varandra baserat på stegen
+	// Koppla spekar med färg baserad på position i hela steglistan
 	for i := 0; i < spokes-1; i++ {
 		if steps[i] == 0 {
 			break
 		}
-		c := StepColor(i, total)
+		c := StepColor(i, spokes)
 		jump := steps[i] % spokes
 		if jump == 0 {
 			jump = 1

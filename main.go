@@ -26,8 +26,8 @@ func loadPrime(filename string, maxDigits int) *big.Int {
 
 func main() {
 	fmt.Println("Läser primtal...")
-	p1 := loadPrime("a.txt", 10000)
-	p2 := loadPrime("b.txt", 10000)
+	p1 := loadPrime("p2.txt", 10000)
+	p2 := loadPrime("p1.txt", 10000)
 
 	fmt.Println("Kör Euklides algoritm...")
 	steps := euklid.StepsBig(p1, p2, 400)

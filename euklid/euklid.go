@@ -1,6 +1,9 @@
 package euklid
 
-import "math/big"
+import (
+	"math"
+	"math/big"
+)
 
 func GCD(a, b int) int {
 	for b != 0 {
@@ -20,7 +23,9 @@ func TruncateBig(x *big.Int, digits int) *big.Int {
 	return n
 }
 
-// StepsBig returnerar normaliserade steg (1–maxStep) för att kunna ritas.
+// StepsBig returnerar normaliserade steg (1–maxStep) med logaritmisk skala.
+// Logaritmisk skala behövs eftersom primtal ger extremt ojämn fördelning —
+// ett par enorma steg och tusentals winziga — linjär skala gör alla små steg = 1.
 func StepsBig(a, b *big.Int, maxStep int) []int {
 	zero := big.NewInt(0)
 	var rawSteps []*big.Int
@@ -35,23 +40,28 @@ func StepsBig(a, b *big.Int, maxStep int) []int {
 		a, b = b, new(big.Int).Mod(a, b)
 	}
 
-	maxQ := big.NewInt(0)
-	for _, q := range rawSteps {
-		if q.Cmp(maxQ) > 0 {
-			maxQ.Set(q)
+	// Konvertera till float64 via log för att hantera extrema värden
+	logVals := make([]float64, len(rawSteps))
+	maxLog := 0.0
+	for i, q := range rawSteps {
+		f, _ := new(big.Float).SetInt(q).Float64()
+		if f < 1 {
+			f = 1
+		}
+		l := math.Log(f)
+		logVals[i] = l
+		if l > maxLog {
+			maxLog = l
 		}
 	}
 
 	steps := make([]int, len(rawSteps))
-	maxBig := big.NewInt(int64(maxStep))
-	for i, q := range rawSteps {
-		if maxQ.Sign() == 0 {
+	for i, l := range logVals {
+		if maxLog == 0 {
 			steps[i] = 1
 			continue
 		}
-		scaled := new(big.Int).Mul(q, maxBig)
-		scaled.Div(scaled, maxQ)
-		v := int(scaled.Int64())
+		v := int(l / maxLog * float64(maxStep))
 		if v < 1 {
 			v = 1
 		}
