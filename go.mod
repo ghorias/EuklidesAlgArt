@@ -1,3 +1,3 @@
-module github.com/ghorias/EuklidesAlgArt
+module EuklidesAlgArt
 
-go 1.22.5
+go 1.21
